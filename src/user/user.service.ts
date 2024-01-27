@@ -17,7 +17,7 @@ export class UserService {
     const createdAt = new Date().getTime();
     const updatedAt = new Date().getTime();
     const version = 1;
-    this.users[id as unknown as string] = {
+    this.users[id] = {
       ...user,
       id,
       createdAt,

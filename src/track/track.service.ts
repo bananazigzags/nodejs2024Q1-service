@@ -8,7 +8,7 @@ export class TrackService {
 
   createTrack(track: CreateTrackDto) {
     const id: string = uuid();
-    this.tracks[id as unknown as string] = {
+    this.tracks[id] = {
       ...track,
       id,
     };
