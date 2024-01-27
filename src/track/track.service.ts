@@ -31,6 +31,7 @@ export class TrackService {
     Object.keys(data).forEach((key) => {
       this.tracks[id][key] = data[key];
     });
+    return this.tracks[id];
   }
 
   findAll(): Track[] {
