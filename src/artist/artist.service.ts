@@ -36,6 +36,7 @@ export class ArtistService {
     Object.keys(data).forEach((key) => {
       this.artists[id][key] = data[key];
     });
+    return this.artists[id];
   }
 
   findAll(): Artist[] {
