@@ -7,7 +7,6 @@ import {
   HttpCode,
   Param,
   Body,
-  UsePipes,
   ParseUUIDPipe,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,7 +14,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserService } from './user.service';
 import { User } from './dto/user';
-import { ParamValidationPipe } from 'src/validation/paramValidation';
 
 @Controller('user')
 export class UserController {
