@@ -11,7 +11,6 @@ export class Album {
   @IsUUID()
   id: string; // uuid v4
 
-  @IsUUID()
   @IsNotEmpty()
   name: string;
 
