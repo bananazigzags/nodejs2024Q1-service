@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/mapped-types';
+import { OmitType, PickType } from '@nestjs/mapped-types';
 import { IsUUID, IsString, IsInt } from 'class-validator';
 
 export class User {
@@ -18,3 +18,5 @@ export class User {
 }
 
 export class UserId extends PickType(User, ['id'] as const) {}
+
+export class FormattedUser extends OmitType(User, ['password']) {}

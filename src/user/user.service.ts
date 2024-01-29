@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User, UserId } from './dto/user';
+import { FormattedUser, User, UserId } from './dto/user';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuid } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -24,7 +24,7 @@ export class UserService {
       updatedAt,
       version,
     };
-    return this.users[id];
+    return this.formatUserForReturn(this.users[id]);
   }
 
   deleteUser(id: string) {
@@ -45,10 +45,16 @@ export class UserService {
       this.users[id].password = data.newPassword;
       this.users[id].updatedAt = new Date().getTime();
       this.users[id].version++;
-      return this.users[id];
+      return this.formatUserForReturn(this.users[id]);
     } else {
       throw new ForbiddenException('Wrong password');
     }
+  }
+
+  formatUserForReturn(user: User): FormattedUser {
+    const formattedUser = { ...user };
+    delete formattedUser.password;
+    return formattedUser;
   }
 
   findAll(): User[] {
