@@ -41,4 +41,13 @@ export class TrackService {
   findById(id: string): Track {
     return this.tracks[id];
   }
+
+  removeAlbumId(albumId: string) {
+    const listForRemoval = this.findByAlbumId(albumId);
+    listForRemoval.forEach((track) => (track.albumId = null));
+  }
+
+  findByAlbumId(id: string): Track[] {
+    return this.findAll().filter((track) => track.albumId === id);
+  }
 }
