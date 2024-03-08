@@ -50,4 +50,13 @@ export class TrackService {
   findByAlbumId(id: string): Track[] {
     return this.findAll().filter((track) => track.albumId === id);
   }
+
+  removeArtistId(artistId: string) {
+    const listForRemoval = this.findByArtistId(artistId);
+    listForRemoval.forEach((track) => (track.artistId = null));
+  }
+
+  findByArtistId(id: string): Track[] {
+    return this.findAll().filter((track) => track.artistId === id);
+  }
 }

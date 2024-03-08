@@ -50,4 +50,13 @@ export class AlbumService {
     }
     return album;
   }
+
+  removeArtistId(artistId: string) {
+    const listForRemoval = this.findByArtistId(artistId);
+    listForRemoval.forEach((album) => (album.artistId = null));
+  }
+
+  findByArtistId(id: string): Album[] {
+    return this.findAll().filter((album) => album.artistId === id);
+  }
 }

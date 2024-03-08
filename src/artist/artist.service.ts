@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   Artist,
   ArtistId,
@@ -6,9 +6,16 @@ import {
   UpdateArtistDto,
 } from './dto/artist';
 import { v4 as uuid } from 'uuid';
+import { TrackService } from 'src/track/track.service';
+import { AlbumService } from 'src/album/album.service';
 
 @Injectable()
 export class ArtistService {
+  @Inject(TrackService)
+  private readonly trackService: TrackService;
+  @Inject(AlbumService)
+  private readonly albumService: AlbumService;
+
   private artists: { [id: ArtistId['id']]: Artist } = {};
 
   createArtist(artist: CreateArtostDto) {
@@ -25,6 +32,8 @@ export class ArtistService {
     if (!user) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
+    this.albumService.removeArtistId(id);
+    this.trackService.removeArtistId(id);
     delete this.artists[id];
   }
 
