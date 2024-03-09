@@ -11,7 +11,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
-import { Artist, CreateArtostDto, UpdateArtistDto } from './dto/artist';
+import { Artist, CreateArtistDto, UpdateArtistDto } from './dto/artist';
 
 @Controller('artist')
 export class ArtistController {
@@ -34,7 +34,7 @@ export class ArtistController {
   }
 
   @Post()
-  async create(@Body() createArtistDto: CreateArtostDto) {
+  async create(@Body() createArtistDto: CreateArtistDto) {
     return this.artistService.createArtist(createArtistDto);
   }
 

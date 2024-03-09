@@ -1,13 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import {
-  Artist,
-  ArtistId,
-  CreateArtostDto,
-  UpdateArtistDto,
-} from './dto/artist';
-import { v4 as uuid } from 'uuid';
+import { Artist, CreateArtistDto, UpdateArtistDto } from './dto/artist';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
+import { DbService } from 'src/db/db.service';
 
 @Injectable()
 export class ArtistService {
@@ -15,44 +10,37 @@ export class ArtistService {
   private readonly trackService: TrackService;
   @Inject(AlbumService)
   private readonly albumService: AlbumService;
+  @Inject(DbService)
+  private readonly dbService: DbService;
 
-  private artists: { [id: ArtistId['id']]: Artist } = {};
-
-  createArtist(artist: CreateArtostDto) {
-    const id: string = uuid();
-    this.artists[id] = {
-      ...artist,
-      id,
-    };
-    return this.artists[id];
+  createArtist(artist: CreateArtistDto) {
+    return this.dbService.create({ type: 'artist', dto: artist });
   }
 
   deleteArtist(id: string) {
-    const user = this.findById(id);
-    if (!user) {
+    const artist = this.dbService.findById({ type: 'artist', id });
+    if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
     this.albumService.removeArtistId(id);
     this.trackService.removeArtistId(id);
-    delete this.artists[id];
+    this.dbService.delete({ type: 'artist', id });
+    this.dbService.removeFromFavorites({ type: 'artists', id });
   }
 
   updateArtist(id: string, data: UpdateArtistDto) {
-    const user = this.findById(id);
-    if (!user) {
+    const artist = this.dbService.findById({ type: 'artist', id });
+    if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
-    Object.keys(data).forEach((key) => {
-      this.artists[id][key] = data[key];
-    });
-    return this.artists[id];
+    return this.dbService.update({ type: 'artist', id, data });
   }
 
-  findAll(): Artist[] {
-    return Object.values(this.artists);
+  findAll() {
+    return this.dbService.findAll({ type: 'artist' }) as Artist[];
   }
 
-  findById(id: string): Artist {
-    return this.artists[id];
+  findById(id: string) {
+    return this.dbService.findById({ type: 'artist', id }) as Artist;
   }
 }

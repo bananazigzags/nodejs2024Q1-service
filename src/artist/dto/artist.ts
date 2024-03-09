@@ -13,8 +13,8 @@ export class Artist {
   grammy: boolean;
 }
 
-export class CreateArtostDto extends OmitType(Artist, ['id'] as const) {}
+export class CreateArtistDto extends OmitType(Artist, ['id'] as const) {}
 
-export class UpdateArtistDto extends PartialType(CreateArtostDto) {}
+export class UpdateArtistDto extends PartialType(CreateArtistDto) {}
 
 export class ArtistId extends PickType(Artist, ['id'] as const) {}

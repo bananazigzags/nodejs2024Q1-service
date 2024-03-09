@@ -1,62 +1,72 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTrackDto, Track, TrackId, UpdateTrackDto } from './dto/track';
-import { v4 as uuid } from 'uuid';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateTrackDto, Track, UpdateTrackDto } from './dto/track';
+import { DbService } from 'src/db/db.service';
 
 @Injectable()
 export class TrackService {
-  private tracks: { [id: TrackId['id']]: Track } = {};
+  @Inject(DbService)
+  private readonly dbService: DbService;
 
   createTrack(track: CreateTrackDto) {
-    const id: string = uuid();
-    this.tracks[id] = {
-      ...track,
-      id,
-    };
-    return this.tracks[id];
+    return this.dbService.create({ type: 'track', dto: track });
   }
 
   deleteTrack(id: string) {
-    const user = this.findById(id);
-    if (!user) {
+    const track = this.dbService.findById({ type: 'track', id });
+    if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-    delete this.tracks[id];
+    this.dbService.delete({ type: 'track', id });
+    this.dbService.removeFromFavorites({ type: 'tracks', id });
   }
 
   updateTrack(id: string, data: UpdateTrackDto) {
-    const user = this.findById(id);
-    if (!user) {
+    const track = this.dbService.findById({ type: 'track', id });
+    if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-    Object.keys(data).forEach((key) => {
-      this.tracks[id][key] = data[key];
-    });
-    return this.tracks[id];
+    return this.dbService.update({ type: 'track', id, data });
   }
 
   findAll(): Track[] {
-    return Object.values(this.tracks);
+    return this.dbService.findAll({ type: 'track' });
   }
 
   findById(id: string): Track {
-    return this.tracks[id];
+    return this.dbService.findById({ type: 'track', id }) as Track;
   }
 
   removeAlbumId(albumId: string) {
     const listForRemoval = this.findByAlbumId(albumId);
-    listForRemoval.forEach((track) => (track.albumId = null));
+    listForRemoval.forEach((track) =>
+      this.dbService.update({
+        type: 'track',
+        id: track.id,
+        data: { albumId: null },
+      }),
+    );
   }
 
   findByAlbumId(id: string): Track[] {
-    return this.findAll().filter((track) => track.albumId === id);
+    return this.findAll().filter(
+      (track) => track.albumId !== null && track.albumId === id,
+    );
   }
 
   removeArtistId(artistId: string) {
     const listForRemoval = this.findByArtistId(artistId);
-    listForRemoval.forEach((track) => (track.artistId = null));
+    listForRemoval.forEach((track) =>
+      this.dbService.update({
+        type: 'track',
+        id: track.id,
+        data: { artistId: null },
+      }),
+    );
   }
 
   findByArtistId(id: string): Track[] {
-    return this.findAll().filter((track) => track.artistId === id);
+    return this.findAll().filter(
+      (track) => track.artistId !== null && track.artistId === id,
+    );
   }
 }

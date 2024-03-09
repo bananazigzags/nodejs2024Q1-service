@@ -1,50 +1,43 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Album, AlbumId, CreateAlbumDto, UpdateAlbumDto } from './dto/album';
-import { v4 as uuid } from 'uuid';
+import { Album, CreateAlbumDto, UpdateAlbumDto } from './dto/album';
 import { TrackService } from 'src/track/track.service';
+import { DbService } from 'src/db/db.service';
 
 @Injectable()
 export class AlbumService {
   @Inject(TrackService)
   private readonly trackService: TrackService;
-
-  private albums: { [id: AlbumId['id']]: Album } = {};
+  @Inject(DbService)
+  private readonly dbService: DbService;
 
   createAlbum(album: CreateAlbumDto) {
-    const id: string = uuid();
-    this.albums[id] = {
-      ...album,
-      id,
-    };
-    return this.albums[id];
+    return this.dbService.create({ type: 'album', dto: album });
   }
 
   deleteAlbum(id: string) {
-    const user = this.findById(id);
-    if (!user) {
+    const album = this.dbService.findById({ type: 'album', id });
+    if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
-    delete this.albums[id];
+    this.dbService.delete({ type: 'album', id });
     this.trackService.removeAlbumId(id);
+    this.dbService.removeFromFavorites({ type: 'albums', id });
   }
 
   updateAlbum(id: string, data: UpdateAlbumDto) {
-    const user = this.findById(id);
-    if (!user) {
+    const album = this.dbService.findById({ type: 'album', id });
+    if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
-    Object.keys(data).forEach((key) => {
-      this.albums[id][key] = data[key];
-    });
-    return this.albums[id];
+    return this.dbService.update({ type: 'album', id, data });
   }
 
   findAll(): Album[] {
-    return Object.values(this.albums);
+    return this.dbService.findAll({ type: 'album' });
   }
 
   findById(id: string): Album {
-    const album = this.albums[id];
+    const album = this.dbService.findById({ type: 'album', id }) as Album;
     if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
@@ -53,7 +46,13 @@ export class AlbumService {
 
   removeArtistId(artistId: string) {
     const listForRemoval = this.findByArtistId(artistId);
-    listForRemoval.forEach((album) => (album.artistId = null));
+    listForRemoval.forEach((album) =>
+      this.dbService.update({
+        type: 'album',
+        id: album.id,
+        data: { artistId: null },
+      }),
+    );
   }
 
   findByArtistId(id: string): Album[] {
