@@ -1,8 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Artist, CreateArtistDto, UpdateArtistDto } from './dto/artist';
+import { CreateArtistDto, UpdateArtistDto } from './dto/artist';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
 import { DbService } from 'src/db/db.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArtistService {
@@ -12,35 +13,47 @@ export class ArtistService {
   private readonly albumService: AlbumService;
   @Inject(DbService)
   private readonly dbService: DbService;
+  @Inject(PrismaService)
+  private readonly prismaService: PrismaService;
 
-  createArtist(artist: CreateArtistDto) {
-    return this.dbService.create({ type: 'artist', dto: artist });
+  async createArtist(artist: CreateArtistDto) {
+    return await this.prismaService.artist.create({ data: artist });
   }
 
-  deleteArtist(id: string) {
-    const artist = this.dbService.findById({ type: 'artist', id });
+  async deleteArtist(id: string) {
+    const artist = await this.prismaService.artist.findUnique({
+      where: { id },
+    });
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
     this.albumService.removeArtistId(id);
     this.trackService.removeArtistId(id);
-    this.dbService.delete({ type: 'artist', id });
+    await this.prismaService.artist.delete({ where: { id } });
     this.dbService.removeFromFavorites({ type: 'artists', id });
   }
 
-  updateArtist(id: string, data: UpdateArtistDto) {
-    const artist = this.dbService.findById({ type: 'artist', id });
+  async updateArtist(id: string, data: UpdateArtistDto) {
+    const artist = await this.prismaService.artist.findUnique({
+      where: { id },
+    });
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
-    return this.dbService.update({ type: 'artist', id, data });
+    return await this.prismaService.artist.update({ where: { id }, data });
   }
 
-  findAll() {
-    return this.dbService.findAll({ type: 'artist' }) as Artist[];
+  async findAll() {
+    return await this.prismaService.artist.findMany();
   }
 
-  findById(id: string) {
-    return this.dbService.findById({ type: 'artist', id }) as Artist;
+  async findById(id: string) {
+    const artist = await this.prismaService.artist.findUnique({
+      where: { id },
+    });
+    if (!artist) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return artist;
   }
 }
