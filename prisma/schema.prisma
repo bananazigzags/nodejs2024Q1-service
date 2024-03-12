@@ -34,3 +34,11 @@ model Album {
   year       Int
   artistId   String     
 }
+
+model Track {
+  id         String     @id @unique @default(uuid())
+  name       String
+  albumId    String
+  artistId   String
+  duration   Int     
+}
