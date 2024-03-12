@@ -27,3 +27,10 @@ model Artist {
   name       String
   grammy     Boolean
 }
+
+model Album {
+  id         String     @id @unique @default(uuid())
+  name       String
+  year       Int
+  artistId   String     
+}
