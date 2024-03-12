@@ -13,24 +13,19 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserService } from './user.service';
-import { User } from './dto/user';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  findAll(): User[] {
+  async findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): User {
-    const user = this.userService.findById(id);
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-    return user;
+  async findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    return this.userService.findById(id);
   }
 
   @Post()
