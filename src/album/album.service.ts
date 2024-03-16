@@ -25,7 +25,7 @@ export class AlbumService {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
     await this.prismaService.album.delete({ where: { id } });
-    this.trackService.removeAlbumId(id);
+    await this.trackService.removeAlbumId(id);
     this.dbService.removeFromFavorites({ type: 'albums', id });
   }
 

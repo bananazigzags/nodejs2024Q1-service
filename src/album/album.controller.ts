@@ -10,21 +10,19 @@ import {
   Put,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
-import { Album, CreateAlbumDto, UpdateAlbumDto } from './dto/album';
+import { CreateAlbumDto, UpdateAlbumDto } from './dto/album';
 
 @Controller('album')
 export class AlbumController {
   constructor(private albumService: AlbumService) {}
 
   @Get()
-  findAll(): Album[] {
+  async findAll() {
     return this.albumService.findAll();
   }
 
   @Get(':id')
-  findById(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Album {
+  async findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.albumService.findById(id);
   }
 

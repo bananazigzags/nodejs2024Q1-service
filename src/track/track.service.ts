@@ -36,7 +36,11 @@ export class TrackService {
   }
 
   async findById(id: string) {
-    return await this.prismaService.track.findUnique({ where: { id } });
+    const track = await this.prismaService.track.findUnique({ where: { id } });
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+    return track;
   }
 
   async removeAlbumId(albumId: string) {
