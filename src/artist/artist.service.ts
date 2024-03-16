@@ -2,7 +2,6 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArtistDto, UpdateArtistDto } from './dto/artist';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
-import { DbService } from 'src/db/db.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -11,8 +10,6 @@ export class ArtistService {
   private readonly trackService: TrackService;
   @Inject(AlbumService)
   private readonly albumService: AlbumService;
-  @Inject(DbService)
-  private readonly dbService: DbService;
   @Inject(PrismaService)
   private readonly prismaService: PrismaService;
 
@@ -30,7 +27,6 @@ export class ArtistService {
     await this.albumService.removeArtistId(id);
     await this.trackService.removeArtistId(id);
     await this.prismaService.artist.delete({ where: { id } });
-    this.dbService.removeFromFavorites({ type: 'artists', id });
   }
 
   async updateArtist(id: string, data: UpdateArtistDto) {

@@ -4,22 +4,12 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Favorites, FavoritesResponse } from './dto/favorites';
-import { DbService } from 'src/db/db.service';
-import { Entity } from 'src/db/dto/db';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavoritesService {
-  @Inject(DbService)
-  private readonly dbService: DbService;
   @Inject(PrismaService)
   private readonly prismaService: PrismaService;
-
-  private readonly favKeyToType: Record<keyof Favorites, Entity> = {
-    artists: 'artist',
-    albums: 'album',
-    tracks: 'track',
-  };
 
   async checkEntityExists(type: keyof Favorites, id: string) {
     let entity: unknown;

@@ -1,12 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTrackDto, UpdateTrackDto } from './dto/track';
-import { DbService } from 'src/db/db.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TrackService {
-  @Inject(DbService)
-  private readonly dbService: DbService;
   @Inject(PrismaService)
   private readonly prismaService: PrismaService;
 
@@ -20,7 +17,6 @@ export class TrackService {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
     await this.prismaService.track.delete({ where: { id } });
-    this.dbService.removeFromFavorites({ type: 'tracks', id });
   }
 
   async updateTrack(id: string, data: UpdateTrackDto) {
