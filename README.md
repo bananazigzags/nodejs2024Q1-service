@@ -11,15 +11,13 @@
 git clone {repository URL}
 ```
 
-## Installing NPM modules
+## Running application on your local machine
+
+Create .env folder and copy contents of .env.example. You can then configure your app, for example, changing the port.
 
 ```
 npm install
 ```
-
-## Running application
-
-Create .env folder and copy contents of .env.example. You can then configure your app, for example, changing the port.
 
 ```
 npm start
@@ -29,6 +27,18 @@ After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 If you set a different port in .env, please navigate to http://localhost:{PORT}/doc where PORT is one your app is using.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+## Running application using Docker
+
+Create .env folder and copy contents of .env.example
+
+Run docker compose up. During the launch of the app, Prisma client will be generated, and migration script will run.
+
+If you make any changes in the app, your Docker container will restart
+
+Use npm run test to verify app is working as expected
+
+Run docker compose images to see image size for nodejs2024q1-service-app-1 doesn't exceed 500MB
 
 ## Available endpoints
 
