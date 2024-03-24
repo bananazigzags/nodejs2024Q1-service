@@ -8,7 +8,6 @@ import {
   Param,
   Body,
   ParseUUIDPipe,
-  NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';

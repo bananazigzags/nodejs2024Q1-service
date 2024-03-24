@@ -11,7 +11,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { CreateTrackDto, Track, UpdateTrackDto } from './dto/track';
+import { CreateTrackDto, UpdateTrackDto } from './dto/track';
 
 @Controller('track')
 export class TrackController {
