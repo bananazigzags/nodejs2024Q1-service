@@ -40,6 +40,8 @@ Use npm run test to verify app is working as expected
 
 Run docker compose images to see image size for nodejs2024q1-service-app-1 doesn't exceed 500MB
 
+Run scan:db and scan:web to scan your containers for vulnerabilities
+
 ## Available endpoints
 
 - `Users` (`/user` route)
