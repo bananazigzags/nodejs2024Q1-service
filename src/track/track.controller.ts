@@ -11,21 +11,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { CreateTrackDto, Track, UpdateTrackDto } from './dto/track';
+import { CreateTrackDto, UpdateTrackDto } from './dto/track';
 
 @Controller('track')
 export class TrackController {
   constructor(private trackService: TrackService) {}
 
   @Get()
-  findAll(): Track[] {
+  findAll() {
     return this.trackService.findAll();
   }
 
   @Get(':id')
-  findById(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Track {
+  findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     const user = this.trackService.findById(id);
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);

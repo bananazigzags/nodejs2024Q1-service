@@ -20,3 +20,8 @@ export class User {
 export class UserId extends PickType(User, ['id'] as const) {}
 
 export class FormattedUser extends OmitType(User, ['password']) {}
+
+export class StoredUser extends OmitType(User, ['createdAt', 'updatedAt']) {
+  createdAt: Date;
+  updatedAt: Date;
+}
