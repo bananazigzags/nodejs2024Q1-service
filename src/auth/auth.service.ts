@@ -60,12 +60,10 @@ export class AuthService {
       throw new ForbiddenException('Authentication failed');
     }
     const passwordMatches = await bcrypt.compare(dto.password, user.password);
-    console.log(passwordMatches);
     if (!passwordMatches) {
       throw new ForbiddenException('Authentication failed');
     }
     const tokens = await this.getTokens(user.id, user.login);
-    console.log(tokens);
     await this.upsertRtHash(user.id, tokens.refreshToken);
     return tokens;
   }
@@ -94,7 +92,6 @@ export class AuthService {
     if (!user) {
       throw new ForbiddenException('Authentication failed');
     }
-    console.log(`inside refresh: ${JSON.stringify(refreshToken)}`);
     const rtMatches = await bcrypt.compare(
       dto.refreshToken,
       refreshToken.hashedRt,
