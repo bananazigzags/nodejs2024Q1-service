@@ -1,9 +1,12 @@
 import { ConsoleLogger, Injectable, LogLevel } from '@nestjs/common';
-import { createWriteStream } from 'node:fs';
+import { createWriteStream, statSync, renameSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 @Injectable()
 export class LoggingService extends ConsoleLogger {
+  private logFileIndex = 0;
+  private errorLogFileIndex = 0;
+
   constructor() {
     super('Log');
     this.setLogLevels(process.env.LOG_LEVELS.split(', ') as LogLevel[]);
@@ -15,13 +18,36 @@ export class LoggingService extends ConsoleLogger {
     }
   }
 
+  getFilesizeInBytes(filename: string) {
+    const stats = statSync(filename);
+    const fileSizeInBytes = stats.size;
+    return fileSizeInBytes;
+  }
+
   async writeToFile(logMessage: string, options?: { isError?: boolean }) {
-    const fileToWrite = join('./logs.md');
+    const fileToWrite = join(`./logs.md`);
+    if (existsSync(fileToWrite)) {
+      const logSize = this.getFilesizeInBytes(fileToWrite);
+      if (logSize >= Number(process.env.MAX_LOG_FILE_SIZE || 20000)) {
+        renameSync(fileToWrite, join(`./logs${this.logFileIndex}.md`));
+        this.logFileIndex++;
+      }
+    }
     const writeStream = createWriteStream(fileToWrite, { flags: 'a+' });
     writeStream.write(`${logMessage}\n`);
 
     if (options?.isError) {
-      const errorFileToWrite = join('./errorLogs.md');
+      const errorFileToWrite = join(`./errorLogs.md`);
+      if (existsSync(errorFileToWrite)) {
+        const errorLogSize = this.getFilesizeInBytes(errorFileToWrite);
+        if (errorLogSize >= Number(process.env.MAX_LOG_FILE_SIZE || 20000)) {
+          renameSync(
+            errorFileToWrite,
+            join(`./errorLogs${this.errorLogFileIndex}.md`),
+          );
+          this.errorLogFileIndex++;
+        }
+      }
       const errorWriteStream = createWriteStream(errorFileToWrite, {
         flags: 'a+',
       });
