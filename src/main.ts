@@ -5,10 +5,14 @@ import { ValidationPipe } from '@nestjs/common';
 import * as swaggerUi from 'swagger-ui-express';
 import * as fs from 'fs';
 import * as YAML from 'yaml';
+import { LoggingService } from './logging/logging.service';
 dotenv.config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+  app.useLogger(app.get(LoggingService));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
