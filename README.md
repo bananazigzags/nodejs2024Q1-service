@@ -56,7 +56,7 @@ const LOG_LEVEL_VALUES: Record<LogLevel, number> = {
   error: 4,
 };
 ```
-Enabled logs will be written to file as well. You can see them locally in logs.md file, or find them in container: if you're using Docker Desktop, click on Show container actions of the app container, then go to Files, find app/dist/logging/logs.md, and click Open file editor to check file contents.
+Enabled logs will be written to file as well. You can see them locally in ./logs.md file, and you can also see only error logs in ./errorLogs.md or find them in container: if you're using Docker Desktop, click on Show container actions of the app container, then go to Files, find app/logs.md or app/errorLogs.md, and click Open file editor to check file contents.
 
 ## Available endpoints
 

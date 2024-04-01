@@ -15,21 +15,24 @@ export class LoggingService extends ConsoleLogger {
     }
   }
 
-  async writeToFile(logMessage: string) {
-    const fileToWrite = join(__dirname, 'logs.md');
-    const localFileToWrite = join('./logs.md');
+  async writeToFile(logMessage: string, options?: { isError?: boolean }) {
+    const fileToWrite = join('./logs.md');
     const writeStream = createWriteStream(fileToWrite, { flags: 'a+' });
-    const localWriteStream = createWriteStream(localFileToWrite, {
-      flags: 'a+',
-    });
     writeStream.write(`${logMessage}\n`);
-    localWriteStream.write(`${logMessage}\n`);
+
+    if (options?.isError) {
+      const errorFileToWrite = join('./errorLogs.md');
+      const errorWriteStream = createWriteStream(errorFileToWrite, {
+        flags: 'a+',
+      });
+      errorWriteStream.write(`${logMessage}\n`);
+    }
   }
 
   error(message: string) {
     this.ignoreIfNotEnabled('error');
     super.error(message);
-    this.writeToFile(message);
+    this.writeToFile(message, { isError: true });
   }
 
   warn(message: string) {
