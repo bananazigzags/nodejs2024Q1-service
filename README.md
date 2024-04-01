@@ -42,6 +42,21 @@ Run docker compose images to see image size for nodejs2024q1-service-app-1 doesn
 
 Run scan:db and scan:web to scan your containers for vulnerabilities
 
+## Configure logging
+
+You can set log levels to be used in the app, separated by commas, like so: warn, debug, verbose. Logs with configured level will be registered as well as other higher priority levels. For example, if you set level warn, all messages with levels error and warn will be logged. Log levels available in Nest.js are listed below. So for all levels above log to be included, you can just set LOG_LEVELS=log, and the app will log log, warn, and error level logs.
+Note: fatal level is available in latest Nest.js, however, this app uses an older version.
+
+```
+const LOG_LEVEL_VALUES: Record<LogLevel, number> = {
+  verbose: 0,
+  debug: 1,
+  log: 2,
+  warn: 3,
+  error: 4,
+};
+```
+
 ## Available endpoints
 
 - `Users` (`/user` route)
