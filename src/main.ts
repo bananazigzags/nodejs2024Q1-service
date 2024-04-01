@@ -28,6 +28,16 @@ async function bootstrap() {
 
   app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+  process.on('uncaughtException', (error) => {
+    app.get(LoggingService).error(`Captured error: ${error.message}`);
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    app
+      .get(LoggingService)
+      .error(`Captured unhandled rejection with reason: ${reason}`);
+  });
+
   await app.listen(process.env.PORT || 4000);
 }
 bootstrap();
