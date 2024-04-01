@@ -6,6 +6,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import * as fs from 'fs';
 import * as YAML from 'yaml';
 import { LoggingService } from './logging/logging.service';
+import { HttpExceptionFilter } from './error-handler/http-exception.filter';
 dotenv.config();
 
 async function bootstrap() {
@@ -20,6 +21,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  app.useGlobalFilters(new HttpExceptionFilter(app.get(LoggingService)));
 
   const file = fs.readFileSync('./doc/api.yaml', 'utf8');
   const swaggerDocument = YAML.parse(file);
